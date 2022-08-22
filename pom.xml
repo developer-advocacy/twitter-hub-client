@@ -8,8 +8,8 @@
         <version>2.7.3</version>
         <relativePath/>
     </parent>
-    <groupId>com.joshlong</groupId>
-    <artifactId>twitter-service-client</artifactId>
+    <groupId>com.joshlong.twitter</groupId>
+    <artifactId>twitter-gateway-client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <artifactory-maven-plugin.version>3.2.3</artifactory-maven-plugin.version>

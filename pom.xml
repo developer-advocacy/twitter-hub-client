@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>com.joshlong</groupId>
-    <artifactId>spring-blog-promotion</artifactId>
+    <artifactId>twitter-service-client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <artifactory-maven-plugin.version>3.2.3</artifactory-maven-plugin.version>

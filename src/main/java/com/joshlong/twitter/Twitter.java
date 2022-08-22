@@ -1,4 +1,4 @@
-package com.joshlong.spring.blogs.twitter;
+package com.joshlong.twitter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.Date;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class TwitterClient {
+public class Twitter {
 
 	private final StreamBridge bridge;
 
@@ -51,22 +51,16 @@ public class TwitterClient {
 			String jsonRequest) {
 	}
 
-}
+	/**
+	 * yeck.
+	 */
+	private static abstract class DateUtils {
 
-/**
- * yeck.
- */
-abstract class DateUtils {
+		public static String writeIsoDateTime(Date in) {
+			var ldt = LocalDateTime.ofInstant(in.toInstant(), ZoneId.systemDefault());
+			return DateTimeFormatter.ISO_DATE_TIME.format(ldt);
+		}
 
-	public static String writeIsoDateTime(Date in) {
-		var ldt = LocalDateTime.ofInstant(in.toInstant(), ZoneId.systemDefault());
-		return DateTimeFormatter.ISO_DATE_TIME.format(ldt);
-	}
-
-	public static Date readIsoDateTime(String s) {
-		var ta = DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(s);
-		var i = LocalDateTime.from(ta).atZone(ZoneId.systemDefault()).toInstant();
-		return Date.from(i);
 	}
 
 }

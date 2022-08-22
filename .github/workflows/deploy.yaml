@@ -1,11 +1,7 @@
-name: Deploy
-
+name: Deploy Twitter Gateway Client
 env:
-
-  # artifactory
   ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
   ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
 
 on:
   push:
@@ -28,9 +24,8 @@ jobs:
         with:
           java-version: 17
 
-      - name: Deploy Twitter Service Client
+      - name: Deploy
         run: |
-          cd $GITHUB_WORKSPACE
           ./mvnw -DskipTests=true spring-javaformat:apply clean package deploy 
 
 

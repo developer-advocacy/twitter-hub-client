@@ -31,7 +31,7 @@ jobs:
       - name: Deploy Twitter Service Client
         run: |
           cd $GITHUB_WORKSPACE
-          ./mvnw -DskipTests=true spring-javaformat:apply clean deploy 
+          ./mvnw -DskipTests=true spring-javaformat:apply clean package deploy 
 
 
 

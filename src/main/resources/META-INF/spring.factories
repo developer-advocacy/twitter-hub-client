@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.joshlong.twitter.TwitterServiceClientAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=com.joshlong.twitter.TwitterGatewayClientEnvironmentPostProcessor
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.joshlong.twitter.TwitterServiceClientAutoConfiguration

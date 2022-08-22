@@ -24,11 +24,11 @@ public class Twitter {
 	private final StreamBridge bridge;
 
 	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String jsonRequest) {
-		log.info("clientId: " + client.id());
-		log.info("clientSecret: " + client.secret());
-		log.info("scheduled: " + scheduled);
-		log.info("twitterUsername: " + twitterUsername);
-		log.info("jsonRequest: " + jsonRequest);
+		log.debug("clientId: " + client.id());
+		log.debug("clientSecret: " + client.secret());
+		log.debug("scheduled: " + scheduled);
+		log.debug("twitterUsername: " + twitterUsername);
+		log.debug("jsonRequest: " + jsonRequest);
 		var scheduledString = DateUtils.writeIsoDateTime(scheduled);
 		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername,
 				jsonRequest);

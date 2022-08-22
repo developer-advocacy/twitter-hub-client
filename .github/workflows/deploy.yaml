@@ -12,6 +12,9 @@ jobs:
     name: Setup and Deploy
     runs-on: ubuntu-latest
     steps:
+
+      - uses: actions/checkout@v2
+
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository
@@ -26,7 +29,8 @@ jobs:
 
       - name: Deploy
         run: |
-          mvn -DskipTests=true spring-javaformat:apply clean package deploy 
+          cd $GITHUB_WORKSPACE
+          ./mvnw -DskipTests=true spring-javaformat:apply clean package deploy 
 
 
 

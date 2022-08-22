@@ -31,7 +31,7 @@ jobs:
       - name: Deploy Twitter Service Client
         run: |
           cd $GITHUB_WORKSPACE
-          export ROOT_DIR=$GITHUB_WORKSPACE
-          ./deploy/deploy.sh
+          ./mvnw -DskipTests=true spring-javaformat:apply clean deploy 
+
 
 

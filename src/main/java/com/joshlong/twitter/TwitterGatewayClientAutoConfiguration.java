@@ -16,17 +16,21 @@ import java.util.Map;
 
 @Configuration
 @EnableConfigurationProperties(TwitterServiceClientProperties.class)
-class TwitterServiceClientAutoConfiguration {
+class TwitterGatewayClientAutoConfiguration {
 
 	@Bean
 	Twitter twitterClient(TwitterServiceClientProperties properties, StreamBridge streamBridge) {
 		var client = properties.client();
-		var id = client.id();
-		var secret = client.secret();
-		var defaultClient = (Twitter.Client) null;
-		if (StringUtils.hasText(id) && StringUtils.hasText(secret))
-			defaultClient = new Twitter.Client(id, secret);
-		return new Twitter(streamBridge, defaultClient);
+		if (null != client) {
+			var id = client.id();
+			var secret = client.secret();
+			var defaultClient = (Twitter.Client) null;
+			if (StringUtils.hasText(id) && StringUtils.hasText(secret))
+				defaultClient = new Twitter.Client(id, secret);
+			return new Twitter(streamBridge, defaultClient);
+		}
+		return new Twitter(streamBridge, null);
+
 	}
 
 }

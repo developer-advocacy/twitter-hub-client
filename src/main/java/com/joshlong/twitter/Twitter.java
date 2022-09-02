@@ -33,36 +33,20 @@ public class Twitter {
 
 	private final Client defaultClient;
 
-	public Mono<Boolean> scheduleTweet(Date scheduled, String twitterUsername, String jsonRequest) {
+	public Mono<Boolean> scheduleTweet(Date scheduled, String twitterUsername, String text, Media media) {
 		Assert.notNull(this.defaultClient, "the defaultClient is null");
-		return this.scheduleTweet(this.defaultClient, scheduled, twitterUsername, jsonRequest);
+		return this.scheduleTweet(this.defaultClient, scheduled, twitterUsername, text, media);
 	}
 
-	@SneakyThrows
-	private static String base64Encode(Resource media) {
-		if (null != media) {
-			try (var in = media.getInputStream()) {
-				var bytes = FileCopyUtils.copyToByteArray(in);
-				return Base64Utils.encodeToString(bytes);
-			}
-		}
-		return null;
-	}
-
-	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String jsonRequest,
+	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String text,
 			Media image) {
-		if (log.isDebugEnabled()) {
-			var map = Map.of("clientSecret:", client.secret(), "scheduled:", scheduled, "twitterUsername:",
-					twitterUsername, "clientId:", client.id(), "jsonRequest:", (Object) jsonRequest);
-			log.debug(map.toString());
-		}
 		var mediaBase64Encoded = (String) null;
 		if (null != image && null != image.resource())
 			mediaBase64Encoded = base64Encode(image.resource());
 
 		var scheduledString = DateUtils.writeIsoDateTime(scheduled);
-		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername,
-				jsonRequest, mediaBase64Encoded);
+		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername, text,
+				mediaBase64Encoded);
 
 		log.debug("going to send " + twitterRequest);
 		try {
@@ -76,9 +60,15 @@ public class Twitter {
 		}
 	}
 
-	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String jsonRequest) {
-		return scheduleTweet(client, scheduled, twitterUsername, jsonRequest, null);
-
+	@SneakyThrows
+	private static String base64Encode(Resource media) {
+		if (null != media) {
+			try (var in = media.getInputStream()) {
+				var bytes = FileCopyUtils.copyToByteArray(in);
+				return Base64Utils.encodeToString(bytes);
+			}
+		}
+		return null;
 	}
 
 	public record Media(Resource resource, MediaType type) {
@@ -93,8 +83,8 @@ public class Twitter {
 	public record Client(String id, String secret) {
 	}
 
-	record TwitterRequest(String clientId, String clientSecret, String scheduled, String twitterUsername,
-			String jsonRequest, String media) {
+	record TwitterRequest(String clientId, String clientSecret, String scheduled, String twitterUsername, String text,
+			String media) {
 	}
 
 	/**

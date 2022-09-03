@@ -1,5 +1,6 @@
 package com.joshlong.twitter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ public class Twitter {
 
 	private final StreamBridge bridge;
 
+	private final ObjectMapper objectMapper;
+
 	private final Client defaultClient;
 
 	public Mono<Boolean> scheduleTweet(Date scheduled, String twitterUsername, String text, Media media) {
@@ -38,6 +41,7 @@ public class Twitter {
 		return this.scheduleTweet(this.defaultClient, scheduled, twitterUsername, text, media);
 	}
 
+	@SneakyThrows
 	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String text,
 			Media image) {
 		var mediaBase64Encoded = (String) null;
@@ -47,10 +51,10 @@ public class Twitter {
 		var scheduledString = DateUtils.writeIsoDateTime(scheduled);
 		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername, text,
 				mediaBase64Encoded);
-
-		log.debug("going to send " + twitterRequest);
+		var json = objectMapper.writeValueAsString(twitterRequest);
+		log.debug("going to send: " + json);
 		try {
-			Assert.isTrue(this.bridge.send("twitter-requests", twitterRequest),
+			Assert.isTrue(this.bridge.send("twitter-requests", json),
 					"the message to twitterRequests has not been sent");
 			return Mono.just(true);
 		} //

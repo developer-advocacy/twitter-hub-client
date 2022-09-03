@@ -1,5 +1,6 @@
 package com.joshlong.twitter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,7 +20,7 @@ import java.util.Map;
 class TwitterGatewayClientAutoConfiguration {
 
 	@Bean
-	Twitter twitterClient(TwitterServiceClientProperties properties, StreamBridge streamBridge) {
+	Twitter twitterClient(TwitterServiceClientProperties properties, ObjectMapper om, StreamBridge streamBridge) {
 		var client = properties.client();
 		if (null != client) {
 			var id = client.id();
@@ -27,9 +28,9 @@ class TwitterGatewayClientAutoConfiguration {
 			var defaultClient = (Twitter.Client) null;
 			if (StringUtils.hasText(id) && StringUtils.hasText(secret))
 				defaultClient = new Twitter.Client(id, secret);
-			return new Twitter(streamBridge, defaultClient);
+			return new Twitter(streamBridge, om, defaultClient);
 		}
-		return new Twitter(streamBridge, null);
+		return new Twitter(streamBridge, om, null);
 
 	}
 

@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.core.io.Resource;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Acts as a light facade around the usual Spring Cloud Stream machinery involved in
@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Twitter {
 
-	private final StreamBridge bridge;
+	private final MessageChannel outbound;
 
 	private final ObjectMapper objectMapper;
 
@@ -47,15 +47,14 @@ public class Twitter {
 		var mediaBase64Encoded = (String) null;
 		if (null != image && null != image.resource())
 			mediaBase64Encoded = base64Encode(image.resource());
-
 		var scheduledString = DateUtils.writeIsoDateTime(scheduled);
 		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername, text,
 				mediaBase64Encoded);
-		var json = objectMapper.writeValueAsString(twitterRequest);
+		var json = this.objectMapper.writeValueAsString(twitterRequest);
 		log.debug("going to send: " + json);
 		try {
-			Assert.isTrue(this.bridge.send("twitter-requests", json),
-					"the message to twitterRequests has not been sent");
+			var sent = this.outbound.send(MessageBuilder.withPayload(json).build());
+			Assert.isTrue(sent, "the message to twitterRequests has not been sent");
 			return Mono.just(true);
 		} //
 		catch (Exception ex) {

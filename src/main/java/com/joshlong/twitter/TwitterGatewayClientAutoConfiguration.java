@@ -35,7 +35,7 @@ class TwitterGatewayClientAutoConfiguration {
 				.outboundAdapter(template)//
 				.routingKey("twitter-requests")//
 				.exchangeName("twitter-requests");
-		return IntegrationFlows//
+		return IntegrationFlow //
 				.from(twitterRequestsChannel)//
 				.handle(spec).get();
 	}

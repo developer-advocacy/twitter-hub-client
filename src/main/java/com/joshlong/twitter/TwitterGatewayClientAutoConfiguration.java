@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.integration.amqp.dsl.Amqp;
@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(TwitterServiceClientProperties.class)
 class TwitterGatewayClientAutoConfiguration {
 

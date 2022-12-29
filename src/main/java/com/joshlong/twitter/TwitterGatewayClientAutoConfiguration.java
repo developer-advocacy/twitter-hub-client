@@ -29,6 +29,9 @@ import java.util.Map;
 @EnableConfigurationProperties(TwitterServiceClientProperties.class)
 class TwitterGatewayClientAutoConfiguration {
 
+	/**
+	 * Spring Boot 3 AOT support
+	 */
 	static class Hints implements RuntimeHintsRegistrar {
 
 		@Override

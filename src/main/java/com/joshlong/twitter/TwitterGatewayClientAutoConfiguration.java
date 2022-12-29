@@ -3,12 +3,17 @@ package com.joshlong.twitter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.integration.amqp.dsl.Amqp;
@@ -20,8 +25,22 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 
 @AutoConfiguration
+@ImportRuntimeHints(TwitterGatewayClientAutoConfiguration.Hints.class)
 @EnableConfigurationProperties(TwitterServiceClientProperties.class)
 class TwitterGatewayClientAutoConfiguration {
+
+	static class Hints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			var mcs = MemberCategory.values();
+
+			for (var c : new Class<?>[] { Twitter.TwitterRequest.class })
+				hints.reflection().registerType(TypeReference.of(c), mcs);
+
+		}
+
+	}
 
 	@Bean
 	MessageChannel twitterRequestsChannel() {

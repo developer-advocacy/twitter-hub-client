@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.integration.amqp.dsl.Amqp;
+import org.springframework.integration.dsl.DirectChannelSpec;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.MessageChannel;
@@ -46,8 +47,8 @@ class TwitterGatewayClientAutoConfiguration {
 	}
 
 	@Bean
-	MessageChannel twitterRequestsChannel() {
-		return MessageChannels.direct().get();
+	DirectChannelSpec twitterRequestsChannel() {
+		return MessageChannels.direct();
 	}
 
 	@Bean

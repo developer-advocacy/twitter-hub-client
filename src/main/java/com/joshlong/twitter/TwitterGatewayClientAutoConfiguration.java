@@ -1,7 +1,8 @@
 package com.joshlong.twitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -87,8 +88,13 @@ record TwitterServiceClientProperties(Client client) {
 	}
 }
 
-@Slf4j
+/*
+ * registered in <code>spring.factories</code>.
+ */
+@SuppressWarnings("unused")
 class TwitterGatewayClientEnvironmentPostProcessor implements EnvironmentPostProcessor {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

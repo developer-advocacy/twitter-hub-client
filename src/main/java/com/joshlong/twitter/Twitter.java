@@ -1,9 +1,8 @@
 package com.joshlong.twitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
@@ -12,9 +11,11 @@ import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -26,9 +27,10 @@ import java.util.Date;
  *
  * @author Josh Long
  */
-@Slf4j
-@RequiredArgsConstructor
+
 public class Twitter {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final MessageChannel outbound;
 
@@ -36,23 +38,29 @@ public class Twitter {
 
 	private final Client defaultClient;
 
+	public Twitter(MessageChannel outbound, ObjectMapper objectMapper, Client defaultClient) {
+		this.outbound = outbound;
+		this.objectMapper = objectMapper;
+		this.defaultClient = defaultClient;
+	}
+
 	public Mono<Boolean> scheduleTweet(Date scheduled, String twitterUsername, String text, Media media) {
 		Assert.notNull(this.defaultClient, "the defaultClient is null");
 		return this.scheduleTweet(this.defaultClient, scheduled, twitterUsername, text, media);
 	}
 
-	@SneakyThrows
 	public Mono<Boolean> scheduleTweet(Client client, Date scheduled, String twitterUsername, String text,
 			Media image) {
-		var mediaBase64Encoded = (String) null;
-		if (null != image && null != image.resource())
-			mediaBase64Encoded = base64Encode(image.resource());
-		var scheduledString = DateUtils.writeIsoDateTime(scheduled);
-		var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername, text,
-				mediaBase64Encoded);
-		var json = this.objectMapper.writeValueAsString(twitterRequest);
-		log.debug("going to send: " + json);
 		try {
+			var mediaBase64Encoded = (String) null;
+			if (null != image && null != image.resource())
+				mediaBase64Encoded = base64Encode(image.resource());
+			var scheduledString = DateUtils.writeIsoDateTime(scheduled);
+			var twitterRequest = new TwitterRequest(client.id(), client.secret(), scheduledString, twitterUsername,
+					text, mediaBase64Encoded);
+			var json = this.objectMapper.writeValueAsString(twitterRequest);
+			log.debug("going to send: " + json);
+
 			var sent = this.outbound.send(MessageBuilder.withPayload(json).build());
 			Assert.isTrue(sent, "the message to twitterRequests has not been sent");
 			return Mono.just(true);
@@ -61,14 +69,17 @@ public class Twitter {
 			log.error("there's been an exception sending the request", ex);
 			return Mono.error(ex);
 		}
+
 	}
 
-	@SneakyThrows
 	private static String base64Encode(Resource media) {
 		if (null != media) {
 			try (var in = media.getInputStream()) {
 				var bytes = FileCopyUtils.copyToByteArray(in);
-				return Base64Utils.encodeToString(bytes);
+				return Base64.getEncoder().encodeToString(bytes);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		}
 		return null;
